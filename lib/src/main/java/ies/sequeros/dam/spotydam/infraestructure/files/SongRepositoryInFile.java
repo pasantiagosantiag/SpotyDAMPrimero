@@ -23,7 +23,7 @@ public class SongRepositoryInFile implements ISongRepository {
 
     }
     @Override
-    public void add(Song item) throws NoSuchFieldException {
+    public void add(Song item) {
         var items=this.load();
         //se comprueba que el mecanico no existe
         if(!items.containsKey(item.getId() )
@@ -36,14 +36,14 @@ public class SongRepositoryInFile implements ISongRepository {
                 throw new RuntimeException(e);
             }
         }else{
-            throw  new  NoSuchFieldException("Item  exists");
+            throw  new IllegalArgumentException("Item  exists");
         }
     }
 
 
 
     @Override
-    public void delete(Song item) throws NoSuchFieldException {
+    public void delete(Song item)  {
         HashMap<UUID,Song> items= load();
         if(items.containsKey(item.getId())){
             items.remove(item.getId());
@@ -54,13 +54,13 @@ public class SongRepositoryInFile implements ISongRepository {
             }
 
         }
-        else
-            throw  new  NoSuchFieldException("Item don´t exists");
+        //else
+        //    throw  new IllegalArgumentException("Item don´t exists");
 
     }
 
     @Override
-    public void update(Song item) throws NoSuchFieldException {
+    public void update(Song item) {
         HashMap<UUID,Song> items= load();
         Song original= items.get(item.getId());
         if(original != null) {
@@ -72,7 +72,7 @@ public class SongRepositoryInFile implements ISongRepository {
                 throw new RuntimeException(e);
             }
         }else
-            throw  new NoSuchFieldException("Item don't exists");
+            throw  new IllegalArgumentException("Item don't exists");
 
     }
 
@@ -107,7 +107,8 @@ public class SongRepositoryInFile implements ISongRepository {
             return pl.getId().equals(id);
         }).findFirst();
 
-        return item.get();
+
+        return item.orElse(null);
     }
 
     public void close(){
@@ -131,6 +132,15 @@ public class SongRepositoryInFile implements ISongRepository {
 
         mapper.writerWithDefaultPrettyPrinter().writeValue(file, items);
 
+    }
+    public void removeAll()  {
+        var items=this.load();
+        items.clear();
+        try {
+            this.save(items);
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface  IPlayListRepository {
-    public void add(PlayList PlayList) throws NoSuchFieldException;
-    public void delete(PlayList PlayList) throws NoSuchFieldException;
-    public void update(PlayList PlayList) throws NoSuchFieldException;
+    public void add(PlayList PlayList);
+    public void delete(PlayList PlayList);
+    public void update(PlayList PlayList);
     public List<PlayList> findAll();
     public List<PlayList> findByUserId(UUID title);
     public PlayList findById(UUID id);

@@ -1,10 +1,7 @@
 package ies.sequeros.dam.spotydam.domain.model;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class User {
     private UUID id;
@@ -32,6 +29,16 @@ public class User {
         this.registrationDate = Objects.requireNonNull(registrationDate, "Registration date cannot be null");
         this.role = Objects.requireNonNull(role, "Role cannot be null");
     }
+    public User(){
+        this.name="";
+        this.nickname="";
+        this.password="";
+        this.image="";
+        this.status=Status.INACTIVE;
+        this.role=Role.USER;
+        this.registrationDate=LocalDate.now();
+
+    }
 
     public void addOwnPlaylist(UUID playlistId) {
         ownPlaylists.add(Objects.requireNonNull(playlistId));
@@ -55,13 +62,35 @@ public class User {
         this.nickname = nickname;
     }
 
-    public String getPassword() {
-        return password;
-    }
+    public String getImage() {return image;}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public void setOtherPlaylists(List<UUID> otherPlaylists) {this.otherPlaylists = otherPlaylists;}
+
+    public void setLastPlayedSongs(List<UUID> lastPlayedSongs) {this.lastPlayedSongs = lastPlayedSongs;}
+
+    public String getPassword() {return password;}
+
+    public void setPassword(String password) {this.password = password;}
+
+    public void setId(UUID id) {this.id = id;}
+
+    public void setRole(Role role) {this.role = role;}
+
+    public void setRegistrationDate(LocalDate registrationDate) {this.registrationDate = registrationDate;}
+
+    public void setStatus(Status status) {this.status = status;}
+
+    public void setOwnPlaylists(List<UUID> ownPlaylists) {this.ownPlaylists = ownPlaylists;}
+
+    public void setImage(String image) {this.image = image;}
+
+    public LocalDate getRegistrationDate() {return registrationDate;}
+
+    public List<UUID> getOwnPlaylists() {return Collections.unmodifiableList(ownPlaylists);}
+
+    public List<UUID> getOtherPlaylists() {return Collections.unmodifiableList(otherPlaylists);}
+
+    public List<UUID> getLastPlayedSongs() {return Collections.unmodifiableList(lastPlayedSongs);}
 
     public String getName() { return name; }
     public String getNickname() { return nickname; }

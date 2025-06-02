@@ -12,4 +12,4 @@ plugins {
 
 rootProject.name = "SpotyDAM"
 include("lib")
-
+include("SpotyDAMUi")

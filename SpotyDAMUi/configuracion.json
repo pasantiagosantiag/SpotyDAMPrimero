@@ -1,0 +1,9 @@
+{
+  "adminpassword" : "1234",
+  "playlistsjsonpath" : "playlist.json",
+  "adminname" : "admin",
+  "imagespath" : "canciones",
+  "sonsjsonpath" : "songs.json",
+  "songspath" : "imagenes",
+  "userjsonpath" : "users.json"
+}

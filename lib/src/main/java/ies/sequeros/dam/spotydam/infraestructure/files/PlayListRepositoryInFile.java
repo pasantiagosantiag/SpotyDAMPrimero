@@ -23,7 +23,11 @@ public class PlayListRepositoryInFile implements IPlayListRepository {
 
     }
     @Override
-    public void add(PlayList item) throws NoSuchFieldException {
+    public void add(PlayList item)  {
+        if(item==null){
+
+            throw  new IllegalArgumentException("Item is null");
+        }
         var items=this.load();
         //se comprueba que el mecanico no existe
         if(!items.containsKey(item.getId() )
@@ -36,14 +40,14 @@ public class PlayListRepositoryInFile implements IPlayListRepository {
                 throw new RuntimeException(e);
             }
         }else{
-            throw  new  NoSuchFieldException("Item  exists");
+            throw  new IllegalArgumentException("Item  exists");
         }
     }
 
 
 
     @Override
-    public void delete(PlayList item) throws NoSuchFieldException {
+    public void delete(PlayList item) {
         HashMap<UUID,PlayList> items= load();
         if(items.containsKey(item.getId())){
             items.remove(item.getId());
@@ -55,12 +59,15 @@ public class PlayListRepositoryInFile implements IPlayListRepository {
 
         }
         else
-            throw  new  NoSuchFieldException("Item don´t exists");
+            throw  new IllegalArgumentException("Item don´t exists");
 
     }
 
     @Override
-    public void update(PlayList item) throws NoSuchFieldException {
+    public void update(PlayList item)  {
+        if(item==null){
+            throw  new IllegalArgumentException("Item is null");
+        }
         HashMap<UUID,PlayList> items= load();
         PlayList original= items.get(item.getId());
         if(original != null) {
@@ -72,7 +79,7 @@ public class PlayListRepositoryInFile implements IPlayListRepository {
                 throw new RuntimeException(e);
             }
         }else
-            throw  new NoSuchFieldException("Item don't exists");
+            throw  new IllegalArgumentException("Item don't exists");
 
     }
 
@@ -97,8 +104,8 @@ public class PlayListRepositoryInFile implements IPlayListRepository {
         var item=items.stream().filter(pl -> {
             return pl.getId().equals(id);
         }).findFirst();
-
-        return item.get();
+return item.orElse(null);
+     //   return item.get();
     }
 
     public void close(){

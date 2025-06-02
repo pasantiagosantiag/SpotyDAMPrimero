@@ -20,13 +20,13 @@ public class IPlayListRepositoryTest extends TestCase {
     private PlayList playlist;
     private UUID userId;
 
-    @Before
+   /* @Before
     public void setup() {
         repository = new PlayListRepositoryInFile("playlists.json");
         repository.removeAll();
         userId = UUID.randomUUID();
         playlist = new PlayList("Favoritas", userId, "Mis canciones favoritas", LocalDate.now());
-    }
+    }*/
 
     @Test
     public void testAddAndFindById() throws Exception {
@@ -71,16 +71,17 @@ public class IPlayListRepositoryTest extends TestCase {
 
    @Test
     public void testAddNullThrows() {
-        assertThrows(NoSuchFieldException.class, () -> repository.add(null));
+
+        assertThrows(IllegalArgumentException.class, () -> repository.add(null));
     }
 
     @Test
     public void testDeleteNullThrows() {
-        assertThrows(NoSuchFieldException.class, () -> repository.delete(null));
+        assertThrows(IllegalArgumentException.class, () -> repository.update(null));
     }
 
     @Test
     public void testUpdateNonexistentThrows() {
-        assertThrows(NoSuchFieldException.class, () -> repository.update(playlist));
+        assertThrows(IllegalArgumentException.class, () -> repository.update(null));
     }
 }

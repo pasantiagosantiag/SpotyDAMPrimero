@@ -4,10 +4,14 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class Song {
-    private final UUID id;
+    private  UUID id;
     private String name;
     private List<Genre> genres;
     private String path;
+
+
+
+    private String pathImage;
     private UUID ownerId;
     private String author;
     private String description;
@@ -21,11 +25,12 @@ public class Song {
         ROCK, POP, JAZZ, REGGAETON, CLASSICAL, ELECTRONIC, BLUES, SALSA, METAL
     }
 
-    public Song(String name, List<Genre> genres, String path, UUID ownerId, String author, String description, LocalDate registrationDate, boolean isPublic) {
+    public Song(String name, List<Genre> genres, String path,String pathImage, UUID ownerId, String author, String description, LocalDate registrationDate, boolean isPublic) {
         this.id = UUID.randomUUID();
         setName(name);
         setGenres(genres);
         setPath(path);
+        setPathImage(pathImage);
         this.ownerId = Objects.requireNonNull(ownerId);
         setAuthor(author);
         this.description = description;
@@ -33,14 +38,30 @@ public class Song {
         this.isPublic = isPublic;
         this.playCount = 0;
     }
+    public Song(){
+        //this.id = UUID.randomUUID();
+        this.id =null;
+        this.name="";
+        this.genres = new ArrayList<>();
+        this.registrationDate= LocalDate.now();
+        this.path="";
+        this.pathImage="";
+    }
 
+    public String getPathImage() {
+        return pathImage;
+    }
+
+    public void setPathImage(String pathImage) {
+        this.pathImage = pathImage;
+    }
     public void setName(String name) {
         if (name == null || name.isBlank()) throw new IllegalArgumentException("Song name cannot be null or blank");
         this.name = name;
     }
 
     public void setGenres(List<Genre> genres) {
-        if (genres == null || genres.isEmpty()) throw new IllegalArgumentException("Genres cannot be null or empty");
+        if (genres == null ) throw new IllegalArgumentException("Genres cannot be null or empty");
         this.genres = genres;
     }
 
@@ -105,7 +126,9 @@ public class Song {
     public void setPlayCount(int playCount) {
         this.playCount = playCount;
     }
-
+    public void setId(UUID id){
+        this.id=id;
+    }
     public UUID getId() { return id; }
     public void play() { playCount++; }
     public void like(UUID userId) { likes.add(new Reaction(userId, LocalDate.now())); }

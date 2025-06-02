@@ -23,7 +23,7 @@ public class UserRepositoryInFile implements IUserRepository {
 
     }
     @Override
-    public void add(User item) throws NoSuchFieldException {
+    public void add(User item)  {
         var items=this.load();
         //se comprueba que el mecanico no existe
         if(!items.containsKey(item.getId() )
@@ -36,22 +36,22 @@ public class UserRepositoryInFile implements IUserRepository {
                 throw new RuntimeException(e);
             }
         }else{
-            throw  new  NoSuchFieldException("Item  exists");
+            throw  new IllegalArgumentException("Item  exists");
         }
     }
 
     @Override
-    public User findByEmailAndPassword(String nickName, String password) {
+    public User findByNickAndPassword(String nickName, String password) {
         var items=this.load().values();
         var item=items.stream().filter(user -> {
             return user.getNickname().equals(nickName) && user.getPassword().equals(password);
         }).findFirst();
+        return item.orElse(null);
 
-        return item.get();
     }
 
     @Override
-    public void delete(User item) throws NoSuchFieldException {
+    public void delete(User item) {
         HashMap<UUID,User> items= load();
         if(items.containsKey(item.getId())){
             items.remove(item.getId());
@@ -62,13 +62,13 @@ public class UserRepositoryInFile implements IUserRepository {
             }
 
         }
-        else
-            throw  new  NoSuchFieldException("Item don´t exists");
+        //else
+        //    throw  new IllegalArgumentException("Item don´t exists");
 
     }
 
     @Override
-    public void update(User item) throws NoSuchFieldException {
+    public void update(User item) {
         HashMap<UUID,User> items= load();
         User original= items.get(item.getId());
         if(original != null) {
@@ -80,7 +80,8 @@ public class UserRepositoryInFile implements IUserRepository {
                 throw new RuntimeException(e);
             }
         }else
-            throw  new NoSuchFieldException("Item don't exists");
+
+        throw  new IllegalArgumentException("Item don't exists");
 
     }
 
@@ -109,5 +110,32 @@ public class UserRepositoryInFile implements IUserRepository {
 
         mapper.writerWithDefaultPrettyPrinter().writeValue(file, items);
 
+    }
+    public void removeAll()  {
+        var items=this.load();
+        items.clear();
+        try {
+            this.save(items);
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public User findById(UUID id) {
+        var items=this.load().values();
+        var item=items.stream().filter(user -> {
+            return user.getId().equals(id);
+        }).findFirst();
+        return item.orElse(null);
+    }
+
+    @Override
+    public User findByNick(String nickName) {
+        var items=this.load().values();
+        var item=items.stream().filter(user -> {
+            return user.getNickname().equals(nickName) ;
+        }).findFirst();
+        return item.orElse(null);
     }
 }

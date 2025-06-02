@@ -8,17 +8,19 @@ public class PlayList {
     private String name;
     private UUID ownerId;
     private String description;
+    private String image;
     private List<UUID> songIds = new ArrayList<>();
     private LocalDate creationDate;
     private List<Reaction> likes = new ArrayList<>();
     private List<Reaction> dislikes = new ArrayList<>();
 
-    public PlayList(String name, UUID ownerId, String description, LocalDate creationDate) {
+    public PlayList(String name, UUID ownerId, String description, LocalDate creationDate, String image) {
         this.id = UUID.randomUUID();
         setName(name);
         this.ownerId = Objects.requireNonNull(ownerId);
         this.description = description;
         this.creationDate = Objects.requireNonNull(creationDate);
+        this.image = image;
     }
     public PlayList(){
 
@@ -89,5 +91,13 @@ public class PlayList {
 
     public void setDislikes(List<Reaction> dislikes) {
         this.dislikes = dislikes;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }
