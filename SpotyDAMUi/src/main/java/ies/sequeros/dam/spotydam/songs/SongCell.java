@@ -13,6 +13,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import org.controlsfx.control.GridCell;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -33,10 +34,10 @@ public class SongCell extends GridCell<Song> {
     private Consumer<Song> onplay;
 
     Label descLabel;
-    MFXButton viewBtn;
+
     FontIcon deleteIcon, viewIcon, editIcon;
     FontIcon playIcon;
-
+    private MFXButton playBtn,editBtn,viewBtn,deleteBtn;
     public SongCell() {
 
         vbox = new VBox();
@@ -50,7 +51,7 @@ public class SongCell extends GridCell<Song> {
         vbox.setBackground(new Background(new BackgroundFill(Color.WHITE, new CornerRadii(10), Insets.EMPTY)));
 
         // Imagen
-        imageView = new ImageView(new Image(getClass().getResourceAsStream("/images/No_image.png"), 180, 120, true, true));
+        imageView = new ImageView(new Image(getClass().getResourceAsStream("/images/No_image.png"), 1120, 120, true, true));
         imageView.setSmooth(true);
         imageView.setPreserveRatio(true);
 
@@ -65,20 +66,20 @@ public class SongCell extends GridCell<Song> {
 
         // Botones
         viewBtn = new MFXButton("");
-        viewIcon=new FontIcon("fa-eye");//new MFXFontIcon("fas-eye", 24);
-        viewIcon.setIconSize(24);
+        viewIcon = new FontIcon("fa-eye");//new MFXFontIcon("fas-eye", 12);
+        viewIcon.setIconSize(12);
         viewBtn.setGraphic(viewIcon);
 
 
-        MFXButton editBtn = new MFXButton("");
-        editIcon=new FontIcon("fa-pencil");//;new MFXFontIcon("fas-pencil", 24);
-        editIcon.setIconSize(24);
+        editBtn = new MFXButton("");
+        editIcon = new FontIcon("fa-pencil");//;new MFXFontIcon("fas-pencil", 12);
+        editIcon.setIconSize(12);
         editBtn.setGraphic(editIcon);
 
 
-        MFXButton deleteBtn = new MFXButton("");
+        deleteBtn = new MFXButton("");
         deleteIcon = new FontIcon("fa-trash");
-        deleteIcon.setIconSize(24);//new MFXFontIcon("fas-trash", 24);
+        deleteIcon.setIconSize(12);//new MFXFontIcon("fas-trash", 12);
 
         deleteBtn.setGraphic(deleteIcon);
 
@@ -88,10 +89,9 @@ public class SongCell extends GridCell<Song> {
         deleteBtn.setStyle(null);
 
 
-
-        MFXButton playBtn = new MFXButton("");
-        playIcon =new FontIcon("fa-play");
-        playIcon.setIconSize(24);
+        playBtn = new MFXButton("");
+        playIcon = new FontIcon("fa-play");
+        playIcon.setIconSize(12);
 
         playBtn.setGraphic(new FontIcon("fa-play"));
 
@@ -99,17 +99,18 @@ public class SongCell extends GridCell<Song> {
         playBtn.setPickOnBounds(true); // permite recibir eventos si el nodo tiene bounds
         playBtn.setMouseTransparent(false);
         playBtn.setStyle(null);
-        HBox buttonBox = new HBox(5, playBtn,viewBtn, editBtn, deleteBtn);
+        HBox buttonBox = new HBox(5, playBtn, viewBtn, editBtn, deleteBtn);
         buttonBox.setAlignment(Pos.CENTER);
 
         vbox.getChildren().addAll(imageView, titleLabel, descLabel, buttonBox);
         //esto es una chapuza, pero no funciona de ninguna otra forma
+
         this.setOnMouseClicked(mouseEvent -> {
 
             var t = mouseEvent.getPickResult().getIntersectedNode();
             if (t instanceof FontIcon) {
-               FontIcon tempoicon = (FontIcon) t;
-                Song c=getItem();
+                FontIcon tempoicon = (FontIcon) t;
+                Song c = getItem();
                 if (tempoicon == this.deleteIcon && this.ondelete != null) {
 
                     this.ondelete.accept(getItem());
@@ -120,23 +121,27 @@ public class SongCell extends GridCell<Song> {
                 if (tempoicon == this.viewIcon && this.onView != null) {
                     this.onView.accept(c);
                 }
-                if(tempoicon == this.playIcon && this.onplay != null) {
 
-                        FontIcon icon = ((FontIcon) playBtn.getGraphic());
-                        if (icon.getIconLiteral().equals("fa-stop-circle:24"))
-                            ((FontIcon) playBtn.getGraphic()).setIconLiteral("fa-play:24");
-                        else
-                            ((FontIcon) playBtn.getGraphic()).setIconLiteral("fa-stop-circle:24");
+                if (tempoicon.getIconLiteral().equals("fa-play") && this.onplay != null) {
+                    this.onplay.accept(c);
+                    ((FontIcon) playBtn.getGraphic()).setIconLiteral("fa-stop-circle:12");
 
-                        this.onplay.accept(c);
+                } else if (tempoicon.getIconLiteral().equals("fa-stop-circle") && this.onplay != null) {
+                    this.onplay.accept(c);
+
+                    ((FontIcon) playBtn.getGraphic()).setIconLiteral("fa-play:12");
 
                 }
+
+
             }
         });
 
     }
 
-
+    public void stop(){
+        ((FontIcon) playBtn.getGraphic()).setIconLiteral("fa-play:12");
+    }
     public void setOnView(Consumer<Song> onView) {
         this.onView = onView;
 
@@ -145,13 +150,15 @@ public class SongCell extends GridCell<Song> {
     public void setOnDelete(Consumer<Song> onDelete) {
         this.ondelete = onDelete;
     }
-    public void setOnPlay(Consumer<Song> onPlay){
-        this.onplay=onPlay;
+
+    public void setOnPlay(Consumer<Song> onPlay) {
+        this.onplay = onPlay;
     }
 
     public void setOnEdit(Consumer<Song> onEdit) {
         this.onedit = onEdit;
     }
+
     protected void updateItem(Song item, boolean empty) {
         super.updateItem(item, empty);
         if (empty || item == null) {
@@ -161,10 +168,11 @@ public class SongCell extends GridCell<Song> {
 
             this.vbox.setStyle("-fx-border-color: #eeeeee;-fx-border-radius: 5;-fx-border-insets: 5;-fx-border-width: 3;-fx-padding: 10 10 10 10;");//"-fx-border-style: dashed;");
             vbox.setAlignment(Pos.CENTER);
-            this.descLabel.setText( item.getName());
-            this.titleLabel.setText(item.getLikes() + "("+item.getDislikes()+")");
-            if(Files.exists(Path.of(item.getPathImage())))
-                this.imageView.setImage(new Image(Path.of(item.getPathImage()).toUri().toString(),180, 120, true, true));
+            this.descLabel.setText(item.getAuthor());
+            this.titleLabel.setFont(Font.font("Segoe UI Emoji", 16));
+            this.titleLabel.setText(item.getName() );
+            if (Files.exists(Path.of(item.getPathImage())))
+                this.imageView.setImage(new Image(Path.of(item.getPathImage()).toUri().toString(), 1120, 120, true, true));
             setGraphic(this.vbox); // Mostrar la imagen en la celda
         }
     }

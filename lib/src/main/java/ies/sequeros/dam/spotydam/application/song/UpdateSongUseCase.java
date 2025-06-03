@@ -33,8 +33,8 @@ public class UpdateSongUseCase {
         }
         //se ha modifica la imagen, se borra la anterior
         if(!original.getPathImage().equals(item.getPathImage())) {
-            String nuevoPath=this.songsRepository.replace("SongImg"+item.getId().toString(),item.getPathImage(),original.getPathImage());
-            item.setPath(nuevoPath);
+            String nuevoPath=this.imagesRepository.replace("SongImg"+item.getId().toString(),item.getPathImage(),original.getPathImage());
+            item.setPathImage(nuevoPath);
         }
         repository.update(item);
     }

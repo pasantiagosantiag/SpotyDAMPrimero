@@ -30,7 +30,7 @@
                     </padding>
                 </HBox>
                 <HBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="10">
-                    <Label minWidth="100" text="Song(Directory) Path:" />
+                    <Label minWidth="100" text="Song(mp3) Path:" />
                     <TextField fx:id="rutaCancionesField" promptText="directory" HBox.hgrow="ALWAYS" />
                     <padding>
                         <Insets bottom="20.0" />

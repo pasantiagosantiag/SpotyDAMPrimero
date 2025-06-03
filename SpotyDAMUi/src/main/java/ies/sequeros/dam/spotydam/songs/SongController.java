@@ -68,7 +68,7 @@ public class SongController extends AWindows {
         this.appViewModel = appViewModel;
         this.playerViewModel = musicPlayerViewModel;
         this.setEditionMode();
-        //  this.configValidationMode();
+          this.configValidation();
         this.escuchadorViewModel = (observableValue, item, newValue) -> {
 
             //reset para campos especiales
@@ -82,47 +82,16 @@ public class SongController extends AWindows {
             }
             this.nameField.setText(newValue.getName());
             this.description.setText(newValue.getDescription());
+            this.autorField.setText(newValue.getAuthor());
             this.isPublic.setSelected(newValue.isPublic());
             if (!newValue.getPathImage().isBlank() && Files.exists(Path.of(newValue.getPathImage()))) {
                 this.pathImagenField.setText(newValue.getPathImage());
                 this.imageView.setImage(new Image(String.valueOf(Path.of(newValue.getPathImage()).toUri().toString()), 180, 120, true, true));
 
-
             } else {
                 this.imageView.setImage(new Image(getClass().getResourceAsStream("/images/No_Image_Available.jpg"), 180, 120, true, true));
             }
-
-          /*  this.passwordField.setText("");
-            this.retrypasswordField.setText("");
-            this.pathImagenField.setText("");
-            //dar valores
-            if (this.songsViewModel.currentProperty().get().getId() == null) {
-                this.titulo.setText("Alta");
-            } else {
-                this.titulo.setText("Modificar");
-            }
-            this.nombreField.setText(newValue.getName());
-
-            this.aliasField.setText(newValue.getNickname());
-            if (newValue.getRole() == User.Role.USER) {
-                this.admnistradorCheck.setSelected(false);
-            } else {
-                this.admnistradorCheck.setSelected(true);
-            }
-            if (newValue.getStatus() == User.Status.ACTIVE) {
-                this.activoCheck.setSelected(true);
-            } else {
-                this.activoCheck.setSelected(false);
-            }
-            if (!newValue.getImage().isBlank() && Files.exists(Path.of(newValue.getImage()))) {
-                this.pathImagenField.setText(newValue.getImage());
-                this.imageView.setImage(new Image(String.valueOf(Path.of(newValue.getImage()).toUri().toString()), 180, 120, true, true));
-
-
-            } else {
-                this.imageView.setImage(new Image(getClass().getResourceAsStream("/images/No_Image_Available.jpg"), 180, 120, true, true));
-            }*/
-
+            this.pathSongField.setText(newValue.getPath());
 
         };
         this.songsViewModel.currentProperty().addListener(this.escuchadorViewModel);
@@ -130,32 +99,15 @@ public class SongController extends AWindows {
 
     private void setEditionMode() {
         this.imagenBtn.visibleProperty().bind(this.songsViewModel.editModeProperty());
+        this.songBtn.visibleProperty().bind(this.songsViewModel.editModeProperty());
         this.pathImagenField.visibleProperty().bind(this.songsViewModel.editModeProperty());
         this.guardarBtn.visibleProperty().bind(this.songsViewModel.editModeProperty());
         this.nameField.editableProperty().bind(this.songsViewModel.editModeProperty());
         this.description.editableProperty().bind(this.songsViewModel.editModeProperty());
-        this.pathSongField.editableProperty().bind(this.songsViewModel.editModeProperty());
+        this.autorField.editableProperty().bind(this.songsViewModel.editModeProperty());
+        this.pathSongField.visibleProperty().bind(this.songsViewModel.editModeProperty());
+        this.pathImagenField.visibleProperty().bind(this.songsViewModel.editModeProperty());
         this.isPublic.disableProperty().bind(this.songsViewModel.editModeProperty().not());
-
-
-       /* this.songsViewModel.editModeProperty().addListener((observableValue, aBoolean, t1) -> {
-            if (t1) {
-                //se desactiva la validación para el modo vista, solo efectos visuales
-                validationSupport.setValidationDecorator(new ValidationDecoration() {
-                    @Override
-                    public void removeDecorations(Control target) {}
-                    @Override
-                    public void applyValidationDecoration(ValidationMessage message) {}
-                    @Override
-                    public void applyRequiredDecoration(Control target) {}
-                });
-            }else{
-                var t=validationSupport.getValidationDecorator();
-                //se vuelven a activar los efectos visuales
-                validationSupport.setValidationDecorator(new StyleClassValidationDecoration());
-            }
-        });*/
-
     }
 
     @FXML
@@ -185,12 +137,12 @@ public class SongController extends AWindows {
             );
             File file = fileChooser.showOpenDialog(null);
             if (file != null) {
-                // this.imageView.setImage(new Image(file.toURI().toString()));
+
                 this.pathSongField.textProperty().set(file.getAbsolutePath());
                 this.playerViewModel.setSong(file.getAbsolutePath());
                 //por si se está reproduciendo uno
                 ((FontIcon)this.playBtn.getGraphic()).setIconLiteral("fa-play:24");
-                // this.imageView.setImage(new Image(file.toURI().toString()));
+
             }
         });
 
@@ -220,22 +172,23 @@ public class SongController extends AWindows {
             }
         });
 
-        // playBtn.disabledProperty().bind(Binding.crete)
+
     }
 
     private void configValidation() {
-     /*   validationSupport = new ValidationSupport();
-        validationSupport.registerValidator(nombreField,
-                Validator.createEmptyValidator("El nombre es obligatorio"));
-        validationSupport.registerValidator(this.aliasField,
-                Validator.createEmptyValidator("El nick es obligatorio"));
-        validationSupport.registerValidator(passwordField,
-                Validator.createEmptyValidator("El password es obligatorio"));
+        validationSupport = new ValidationSupport();
+        validationSupport.redecorate();
+        validationSupport.registerValidator(nameField,
+                Validator.createEmptyValidator("Name is required"));
+        validationSupport.registerValidator(description,
+                Validator.createEmptyValidator("Description is required"));
+        validationSupport.registerValidator(autorField,
+                Validator.createEmptyValidator("Author is requiered"));
         validationSupport.registerValidator(this.pathImagenField,
-                Validator.createEmptyValidator("Se ha de seleccioanr una imagen"));
-        validationSupport.registerValidator(this.retrypasswordField, Validator.createPredicateValidator(t -> {
-            return passwordField.getText().equals(retrypasswordField.getText());
-        }, "Los password no coinciden", Severity.ERROR));*/
+                Validator.createEmptyValidator("Image is required"));
+        validationSupport.registerValidator(this.pathSongField,
+                Validator.createEmptyValidator("Song is required"));
+
 
     }
 
@@ -276,9 +229,8 @@ public class SongController extends AWindows {
     @Override
     public void stop() {
         if(this.playerViewModel!=null)
-        this.playerViewModel.stop();
-        //se
-        //this.SongsViewModel.currentProperty().removeListener(this.escuchadorViewModel);
+            this.playerViewModel.stop();
+
     }
 
     @Override

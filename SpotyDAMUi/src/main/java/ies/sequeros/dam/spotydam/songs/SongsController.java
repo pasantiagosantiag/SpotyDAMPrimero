@@ -11,8 +11,12 @@ import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.mfxcore.controls.Label;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.media.MediaPlayer;
 import org.controlsfx.control.GridView;
+
+import java.util.Set;
 
 public class SongsController extends AWindows {
     @FXML
@@ -52,6 +56,7 @@ public class SongsController extends AWindows {
         this.up.setOnMouseClicked(event -> {
             //se va hacia atras
             if (this.router != null) {
+                this.playerViewModel.stop();
                 this.router.pop();
             }
         });
@@ -59,6 +64,7 @@ public class SongsController extends AWindows {
             if (this.router != null) {
                 this.viewModel.setEmptyCurrent();
                 this.viewModel.setEditMode(true);
+                this.playerViewModel.stop();
                 this.router.push("song");
             }
         });
@@ -92,7 +98,7 @@ public class SongsController extends AWindows {
                 //solo ver
                 this.viewModel.setCurrent(item);
                 this.viewModel.setEditMode(false);
-                this.router.push("user");
+                this.router.push("song");
             });
             c.setOnEdit(item -> {
                 //modod edición
@@ -100,7 +106,17 @@ public class SongsController extends AWindows {
                 //se coloca el actual y se pasa
                 this.viewModel.setCurrent(item);
                 this.viewModel.setEditMode(true);
-                this.router.push("user");
+                this.router.push("song");
+            });
+            c.setOnPlay( item->{
+                if( this.playerViewModel.currentTrackProperty().get()==null || !this.playerViewModel.currentTrackProperty().get().equals(item.getPath()))
+                    this.playerViewModel.setSong(item.getPath());
+                var status=this.playerViewModel.getStatus();
+                disablePlayButtonfromGrid();
+                if(this.playerViewModel.getStatus()== MediaPlayer.Status.READY || this.playerViewModel.getStatus()== MediaPlayer.Status.UNKNOWN || this.playerViewModel.getStatus()== MediaPlayer.Status.PAUSED || this.playerViewModel.getStatus()== MediaPlayer.Status.STOPPED)
+                    this.playerViewModel.play();
+                else
+                    this.playerViewModel.pause();
             });
             return c;
         });
@@ -108,6 +124,17 @@ public class SongsController extends AWindows {
 
     }
 
+    /**
+     * para desactivar todos los botonoes de play
+     */
+    private void disablePlayButtonfromGrid(){
+        Set<Node> nodos = this.grid.lookupAll(".grid-cell");
+        for (Node n : nodos) {
+            SongCell c = (SongCell) n;
+            c.stop();
+
+        }
+    }
 
     @Override
     public void init() {
@@ -116,7 +143,7 @@ public class SongsController extends AWindows {
 
     @Override
     public void stop() {
-
+        this.playerViewModel.stop();
     }
 
     @Override

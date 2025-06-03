@@ -66,6 +66,8 @@ this.editMode= new SimpleBooleanProperty(false);
         if (this.addSongUseCase != null) {
             this.addSongUseCase.execute(item);
             this.items.add(item);
+            this.current.set(new Song());
+            this.current.set(item);
         } else
             throw new NullPointerException("Caso de uso para añadir nulo");
 

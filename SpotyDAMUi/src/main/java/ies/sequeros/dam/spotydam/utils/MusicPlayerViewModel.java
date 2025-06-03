@@ -39,7 +39,9 @@ public class MusicPlayerViewModel {
     public void play() {
         if (mediaPlayer.get() != null && currentTrack.get() != null && mediaPlayer.get().getMedia() != null) {
             var status = mediaPlayer.get().getStatus();
-            if (mediaPlayer.get().getStatus().equals(MediaPlayer.Status.PAUSED) || status.equals(MediaPlayer.Status.READY)) {
+            if (mediaPlayer.get().getStatus().equals(MediaPlayer.Status.PAUSED )
+                    || status.equals(MediaPlayer.Status.READY)
+                    || status.equals(MediaPlayer.Status.UNKNOWN)) {
                 mediaPlayer.get().play();
 
             } else if (mediaPlayer.get().getStatus() == MediaPlayer.Status.STOPPED) {
@@ -50,7 +52,14 @@ public class MusicPlayerViewModel {
 
         }
     }
-
+    public void toogle(){
+        if(mediaPlayer.get().getStatus() == MediaPlayer.Status.STOPPED || mediaPlayer.get().getStatus() == MediaPlayer.Status.PAUSED
+        || mediaPlayer.get().getStatus() == MediaPlayer.Status.READY){
+            mediaPlayer.get().play();
+        }else{
+            mediaPlayer.get().pause();
+        }
+    }
     public MediaPlayer.Status getStatus() {
         if (this.mediaPlayer.get() != null)
             return this.mediaPlayer.get().getStatus();

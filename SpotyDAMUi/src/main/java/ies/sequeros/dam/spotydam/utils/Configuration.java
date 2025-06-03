@@ -42,16 +42,7 @@ public class Configuration {
     private Configuration(String rutaArchivo) {
         this.archivo = new File(rutaArchivo);
         cargarConfiguraciones();
-        //cuando cambia se guarda
-       /* endPointAnalsisiCancion.addListener((observableValue, s, t1) -> {
-            this.guardar();
-        });
-        directorioCanciones.addListener((observableValue, s, t1) -> {
-            this.guardar();
-        });
-        tiempoDevida.addListener((observableValue, s, t1) -> {
-            this.guardar();
-        });*/
+
 
     }
 
