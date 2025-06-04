@@ -15,6 +15,10 @@
 	-fx-min-width: 300;
 
 }
+.root {
+	-fx-font-family: "Segoe UI Emoji", "Noto Color Emoji", "Arial";
+	-fx-font-size: 14px;
+}
 
 
 

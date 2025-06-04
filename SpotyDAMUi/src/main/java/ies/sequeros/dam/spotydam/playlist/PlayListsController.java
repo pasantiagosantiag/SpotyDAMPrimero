@@ -1,10 +1,9 @@
-package ies.sequeros.dam.spotydam.songs;
+package ies.sequeros.dam.spotydam.playlist;
 
 
-import ies.sequeros.dam.spotydam.domain.model.Song;
+import ies.sequeros.dam.spotydam.domain.model.PlayList;
 import ies.sequeros.dam.spotydam.navegacion.AWindows;
 
-import ies.sequeros.dam.spotydam.playlist.PlayListsViewModel;
 import ies.sequeros.dam.spotydam.utils.AppViewModel;
 import ies.sequeros.dam.spotydam.utils.MusicPlayerViewModel;
 import io.github.palexdev.materialfx.controls.MFXButton;
@@ -19,7 +18,7 @@ import org.controlsfx.control.GridView;
 
 import java.util.Set;
 
-public class SongsController extends AWindows {
+public class PlayListsController extends AWindows {
     @FXML
     private Label titulo;
     @FXML
@@ -31,23 +30,21 @@ public class SongsController extends AWindows {
     @FXML
     private MFXButton search;
     @FXML
-    private GridView<Song> grid;
+    private GridView<PlayList> grid;
 
-    private FilteredList<Song> filtrados;
-    private SongsViewModel viewModel;
-    private PlayListsViewModel playListsViewModel;
+    private FilteredList<PlayList> filtrados;
+    private PlayListsViewModel viewModel;
     private AppViewModel appViewModel;
     private MusicPlayerViewModel playerViewModel;
-    public SongsController() {
+    public PlayListsController() {
         super();
     }
 
-    public void setViewModels(SongsViewModel viewModel, PlayListsViewModel playListsViewModel,AppViewModel appViewModel, MusicPlayerViewModel musicPlayerViewModel) {
+    public void setViewModels(PlayListsViewModel viewModel, AppViewModel appViewModel, MusicPlayerViewModel musicPlayerViewModel) {
         this.viewModel = viewModel;
         this.appViewModel = appViewModel;
         this.playerViewModel = musicPlayerViewModel;
-        this.playListsViewModel = playListsViewModel;
-        filtrados = new FilteredList<>(this.viewModel.getSongsProperty());
+        filtrados = new FilteredList<>(this.viewModel.getPlayListsProperty());
         // El predicado se actualiza cada vez que cambia el texto del filtro
         this.searchField.textProperty().addListener((obs, oldVal, newVal) -> {
             filtrados.setPredicate(item -> {
@@ -68,7 +65,7 @@ public class SongsController extends AWindows {
                 this.viewModel.setEmptyCurrent();
                 this.viewModel.setEditMode(true);
                 this.playerViewModel.stop();
-                this.router.push("song");
+                this.router.push("playlist");
             }
         });
         this.initGrid();
@@ -81,12 +78,12 @@ public class SongsController extends AWindows {
 
     private void initGrid() {
         grid.setCellFactory(gridViewCell -> {
-            SongCell c = new SongCell(this.viewModel,this.playListsViewModel);
+            PlayListCell c = new PlayListCell();
             c.setOnDelete(item -> {
                 boolean resultado = this.showMessageBooleano("¿Está seguro/a de borrar el elemento?", "Confirmar borrado");
                 if (resultado) {
                     try {
-                        this.viewModel.removeSong(item);
+                        this.viewModel.removePlayList(item);
                     } catch (Exception e) {
                         Alert alert = new Alert(Alert.AlertType.ERROR);
 
@@ -101,7 +98,7 @@ public class SongsController extends AWindows {
                 //solo ver
                 this.viewModel.setCurrent(item);
                 this.viewModel.setEditMode(false);
-                this.router.push("song");
+                this.router.push("playlist");
             });
             c.setOnEdit(item -> {
                 //modod edición
@@ -109,18 +106,9 @@ public class SongsController extends AWindows {
                 //se coloca el actual y se pasa
                 this.viewModel.setCurrent(item);
                 this.viewModel.setEditMode(true);
-                this.router.push("song");
+                this.router.push("playlist");
             });
-            c.setOnPlay( item->{
-                if( this.playerViewModel.currentTrackProperty().get()==null || !this.playerViewModel.currentTrackProperty().get().equals(item.getPath()))
-                    this.playerViewModel.setSong(item.getPath());
-                var status=this.playerViewModel.getStatus();
-                disablePlayButtonfromGrid();
-                if(this.playerViewModel.getStatus()== MediaPlayer.Status.READY || this.playerViewModel.getStatus()== MediaPlayer.Status.UNKNOWN || this.playerViewModel.getStatus()== MediaPlayer.Status.PAUSED || this.playerViewModel.getStatus()== MediaPlayer.Status.STOPPED)
-                    this.playerViewModel.play();
-                else
-                    this.playerViewModel.pause();
-            });
+
             return c;
         });
 
@@ -133,7 +121,7 @@ public class SongsController extends AWindows {
     private void disablePlayButtonfromGrid(){
         Set<Node> nodos = this.grid.lookupAll(".grid-cell");
         for (Node n : nodos) {
-            SongCell c = (SongCell) n;
+            PlayListCell c = (PlayListCell) n;
             c.stop();
 
         }

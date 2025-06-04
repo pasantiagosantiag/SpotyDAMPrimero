@@ -40,7 +40,7 @@
                   </ToolBar>
             </children>
          </VBox>
-           <Label fx:id="titulo" alignment="CENTER" maxHeight="40.0" maxWidth="1.7976931348623157E308" styleClass="header-label" text="Listado de Usuarios" textAlignment="CENTER" />
+           <Label fx:id="titulo" alignment="CENTER" maxHeight="40.0" maxWidth="1.7976931348623157E308" styleClass="header-label" text="User List" textAlignment="CENTER" />
          <!--<ScrollPane fitToHeight="true" fitToWidth="true">
              <padding>
                  <Insets left="10.0" />

@@ -12,7 +12,8 @@
 <?import org.controlsfx.control.GridView?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane stylesheets="@../../css/TextFields.css, @../../css/Buttons.css, @../../css/Main.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ies.sequeros.dam.spotydam.songs.SongsController">
+<AnchorPane stylesheets="@../../css/TextFields.css, @../../css/Buttons.css, @../../css/Main.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ies.sequeros.dam.spotydam.playlist.PlayListsController">
    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS">
       <children>
          <VBox alignment="TOP_RIGHT" maxWidth="1.7976931348623157E308" >
@@ -40,7 +41,7 @@
                   </ToolBar>
             </children>
          </VBox>
-           <Label fx:id="titulo" alignment="CENTER" maxHeight="40.0" maxWidth="1.7976931348623157E308" styleClass="header-label" text="Songs List" textAlignment="CENTER" />
+           <Label fx:id="titulo" alignment="CENTER" maxHeight="40.0" maxWidth="1.7976931348623157E308" styleClass="header-label" text="PlayList List" textAlignment="CENTER" />
          <!--<ScrollPane fitToHeight="true" fitToWidth="true">
              <padding>
                  <Insets left="10.0" />

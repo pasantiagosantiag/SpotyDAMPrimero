@@ -9,18 +9,20 @@ public class PlayList {
     private UUID ownerId;
     private String description;
     private String image;
+    private boolean isPublic;
     private List<UUID> songIds = new ArrayList<>();
     private LocalDate creationDate;
     private List<Reaction> likes = new ArrayList<>();
     private List<Reaction> dislikes = new ArrayList<>();
 
-    public PlayList(String name, UUID ownerId, String description, LocalDate creationDate, String image) {
+    public PlayList(String name, UUID ownerId, String description, LocalDate creationDate, String image, Boolean isPublic) {
         this.id = UUID.randomUUID();
         setName(name);
         this.ownerId = Objects.requireNonNull(ownerId);
         this.description = description;
         this.creationDate = Objects.requireNonNull(creationDate);
         this.image = image;
+        this.isPublic = isPublic;
     }
     public PlayList(){
 
@@ -95,6 +97,14 @@ public class PlayList {
 
     public String getImage() {
         return image;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean aPublic) {
+        isPublic = aPublic;
     }
 
     public void setImage(String image) {

@@ -13,11 +13,11 @@
 <?import javafx.scene.text.Text?>
 
 <?import org.kordamp.ikonli.javafx.FontIcon?>
-<AnchorPane maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ies.sequeros.dam.spotydam.songs.SongController">
+<AnchorPane maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ies.sequeros.dam.spotydam.playlist.PlayListController">
     <StackPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
     <VBox alignment="CENTER" maxWidth="550">
         <children>
-            <Text fx:id="titulo" strokeType="OUTSIDE" strokeWidth="0.0" text="Song">
+            <Text fx:id="titulo" strokeType="OUTSIDE" strokeWidth="0.0" text="PlayList">
                <VBox.margin>
                   <Insets bottom="40.0" />
                </VBox.margin></Text>
@@ -28,13 +28,7 @@
                   <Insets bottom="20.0" />
                </padding>
             </HBox>
-            <HBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="10">
-                <Label minWidth="100" text="Author:" />
-                <TextField fx:id="autorField" promptText="Author" HBox.hgrow="ALWAYS" />
-                <padding>
-                    <Insets bottom="20.0" />
-                </padding>
-            </HBox>
+
 
             <HBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="10">
                 <Label minWidth="100" text="Description:" />
@@ -55,20 +49,7 @@
             </HBox>
 
 
-            <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label minWidth="100" text="Song:" />
-                <TextField fx:id="pathSongField" editable="false" HBox.hgrow="ALWAYS" />
-                <Button fx:id="songBtn" text="Seleccionar" />
-               <Button fx:id="playBtn" mnemonicParsing="false" >
-                   <graphic>
-                       <FontIcon iconColor="#18268c" iconLiteral="fa-play:24"/> <!--:#FFC72C" />-->
-                   </graphic>
-               </Button>
 
-                <padding>
-                    <Insets bottom="20.0" />
-                </padding>
-            </HBox>
 
             <HBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="10">
                 <Label minWidth="100" text="Public:" />

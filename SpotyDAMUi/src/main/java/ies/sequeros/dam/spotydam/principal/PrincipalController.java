@@ -4,18 +4,25 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDrawer;
 import com.jfoenix.controls.JFXHamburger;
 import com.jfoenix.transitions.hamburger.HamburgerSlideCloseTransition;
+import ies.sequeros.dam.spotydam.application.playlist.*;
 import ies.sequeros.dam.spotydam.application.song.*;
 import ies.sequeros.dam.spotydam.application.user.*;
 import ies.sequeros.dam.spotydam.config.ConfigureController;
 import ies.sequeros.dam.spotydam.domain.model.User;
 import ies.sequeros.dam.spotydam.domain.repositories.IFilesRepository;
+import ies.sequeros.dam.spotydam.domain.repositories.IPlayListRepository;
 import ies.sequeros.dam.spotydam.domain.repositories.ISongRepository;
 import ies.sequeros.dam.spotydam.domain.repositories.IUserRepository;
 import ies.sequeros.dam.spotydam.infraestructure.files.LocalFilesRepository;
+import ies.sequeros.dam.spotydam.infraestructure.files.PlayListRepositoryInFile;
 import ies.sequeros.dam.spotydam.infraestructure.files.SongRepositoryInFile;
 import ies.sequeros.dam.spotydam.infraestructure.files.UserRepositoryInFile;
+import ies.sequeros.dam.spotydam.login.LoginController;
 import ies.sequeros.dam.spotydam.navegacion.AWindows;
 import ies.sequeros.dam.spotydam.navegacion.Router;
+import ies.sequeros.dam.spotydam.playlist.PlayListController;
+import ies.sequeros.dam.spotydam.playlist.PlayListsController;
+import ies.sequeros.dam.spotydam.playlist.PlayListsViewModel;
 import ies.sequeros.dam.spotydam.songs.SongController;
 import ies.sequeros.dam.spotydam.songs.SongsController;
 import ies.sequeros.dam.spotydam.songs.SongsViewModel;
@@ -30,11 +37,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
@@ -51,6 +61,7 @@ public class PrincipalController {
     private IFilesRepository filesRepository;
     private IFilesRepository songsFilesRepository;
     private ISongRepository songsRepository;
+    private IPlayListRepository playListRepository;
     //casos de uso general
     //caso de uso de user
     private AddUserUseCase addUserUseCase;
@@ -67,14 +78,22 @@ public class PrincipalController {
     private ListAllSongsUseCase listAllSongsUseCase;
     private RemoveSongToPlayListUseCase removeSongToPlayListUseCase;
     private UpdateSongUseCase updateSongUseCase;
+    //casos de uso de playlist
+    private AddPlayListUseCase addPlayListUseCase;
+    private DeletePlayListUseCase deletePlayListUseCase;
+    private AddSongToPlayListUseCase addSongToPlayListUseCase;
+    private ListAllPlayListUseCase listAllPlayListUseCase;
+    private UpdatePlayListUseCase updatePlayListUseCase;
     //viewmodel
     private UsersViewModel usersViewModel;
     private SongsViewModel songsViewModel;
+    private PlayListsViewModel playListsViewModel;
     private AppViewModel appViewModel;
     private MusicPlayerViewModel musicPlayerViewModel;
     //varios
     private VBox listaOpciones;
     private Router router;
+
     @FXML
     public void initialize() {
 
@@ -98,47 +117,58 @@ public class PrincipalController {
             e.printStackTrace();
         }
     }
-    private void initRepositories(){
-        var c=Configuration.getInstancia();
-        this.userRepository= new UserRepositoryInFile(c.getUserJsonPath());
-        this.filesRepository= new LocalFilesRepository(c.getImagesPath());
-        this.songsRepository=new SongRepositoryInFile(c.getSonsJsongsPath());
-        this.songsFilesRepository= new LocalFilesRepository(c.getSongsPath());
+
+    private void initRepositories() {
+        var c = Configuration.getInstancia();
+        this.userRepository = new UserRepositoryInFile(c.getUserJsonPath());
+        this.filesRepository = new LocalFilesRepository(c.getImagesPath());
+        this.songsRepository = new SongRepositoryInFile(c.getSonsJsongsPath());
+        this.songsFilesRepository = new LocalFilesRepository(c.getSongsPath());
+        this.playListRepository= new PlayListRepositoryInFile(c.getPlayListJsonPath());
 
     }
-    private void initUseCases(){
+
+    private void initUseCases() {
         //users
         this.addUserUseCase = new AddUserUseCase(userRepository, this.filesRepository);
-        this.updateUserUseCase=new UpdateUserUseCase(userRepository, this.filesRepository);
+        this.updateUserUseCase = new UpdateUserUseCase(userRepository, this.filesRepository);
         this.changeStateUserUseCase = new ChangeStateUserUseCase(userRepository);
-        this.deleteUserUseCase= new DeleteUserUseCase(userRepository,this.filesRepository,null,null);
-        this.getUserByIdUseCase= new GetUserByIdUseCase(userRepository,null,null);
-        this.listAllUserUseCase= new ListAllUserUseCase(userRepository);
-        this.setRoleUserUseCase= new SetRoleUserUseCase(userRepository);
+        this.deleteUserUseCase = new DeleteUserUseCase(userRepository, this.filesRepository, null, null);
+        this.getUserByIdUseCase = new GetUserByIdUseCase(userRepository, null, null);
+        this.listAllUserUseCase = new ListAllUserUseCase(userRepository);
+        this.setRoleUserUseCase = new SetRoleUserUseCase(userRepository);
 
         //song
-        this.addSongUseCase= new AddSongUseCase(this.songsRepository,this.filesRepository,this.songsFilesRepository);
-       this.deleteSongUseCase= new DeleteSongUseCase(songsRepository,null,this.filesRepository,this.songsFilesRepository);
-       this.getSongByIdUseCase= new GetSongByIdUseCase(songsRepository,null);
-       this.listAllSongsUseCase= new ListAllSongsUseCase(songsRepository);
-       this.updateSongUseCase= new UpdateSongUseCase(this.songsRepository,null,this.filesRepository,this.songsFilesRepository);
-
+        this.addSongUseCase = new AddSongUseCase(this.songsRepository, this.filesRepository, this.songsFilesRepository);
+        this.deleteSongUseCase = new DeleteSongUseCase(songsRepository, null, this.filesRepository, this.songsFilesRepository);
+        this.getSongByIdUseCase = new GetSongByIdUseCase(songsRepository, null);
+        this.listAllSongsUseCase = new ListAllSongsUseCase(songsRepository);
+        this.updateSongUseCase = new UpdateSongUseCase(this.songsRepository, null, this.filesRepository, this.songsFilesRepository);
+        //playlist
+        this.addPlayListUseCase = new AddPlayListUseCase(playListRepository, this.filesRepository);
+        this.addSongToPlayListUseCase = new AddSongToPlayListUseCase(playListRepository);
+        this.listAllPlayListUseCase = new ListAllPlayListUseCase(playListRepository);
+        this.deletePlayListUseCase = new DeletePlayListUseCase(playListRepository, this.filesRepository);
+        this.updatePlayListUseCase = new UpdatePlayListUseCase(playListRepository, this.filesRepository);
 
     }
-    private void initViewModels(){
-        this.usersViewModel= new UsersViewModel(this.addUserUseCase,this.updateUserUseCase,this.
+
+    private void initViewModels() {
+        this.usersViewModel = new UsersViewModel(this.addUserUseCase, this.updateUserUseCase, this.
                 changeStateUserUseCase,
                 this.deleteUserUseCase,
                 this.getUserByIdUseCase,
                 this.listAllUserUseCase,
                 this.setRoleUserUseCase);
-        this.songsViewModel =new SongsViewModel(this.addSongUseCase,
+        this.songsViewModel = new SongsViewModel(this.addSongUseCase,
                 this.updateSongUseCase,
                 this.deleteSongUseCase,
                 this.getSongByIdUseCase,
                 this.listAllSongsUseCase);
-        this.musicPlayerViewModel= new MusicPlayerViewModel();
+        this.playListsViewModel = new PlayListsViewModel(addPlayListUseCase, updatePlayListUseCase, deletePlayListUseCase, addSongToPlayListUseCase, listAllPlayListUseCase);
+        this.musicPlayerViewModel = new MusicPlayerViewModel();
     }
+
     private void initHome() {
         JFXButton homeButton = new JFXButton("Home");
         FontIcon icon = new FontIcon("fa-home"); // Usando Ikonli: https://kordamp.org/ikonli/
@@ -175,11 +205,40 @@ public class PrincipalController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        SongsController cc= loader.getController();
+        SongsController cc = loader.getController();
         cc.setRouter(this.router);
-        cc.setViewModels(this.songsViewModel,this.appViewModel,this.musicPlayerViewModel);
+        cc.setViewModels(this.songsViewModel,this.playListsViewModel, this.appViewModel, this.musicPlayerViewModel);
         button.setOnMouseClicked(mouseEvent -> {
             this.router.push("songs");
+        });
+    }
+
+
+    private void initPlayListsList() {
+        JFXButton button = new JFXButton("Play List");
+        FontIcon icon = new FontIcon("fa-list"); // Usando Ikonli: https://kordamp.org/ikonli/
+        icon.setIconSize(18);
+
+        button.setGraphic(icon);
+        button.setMaxWidth(Double.MAX_VALUE);
+        button.setAlignment(Pos.CENTER_LEFT);
+        VBox.setMargin(button, new Insets(10, 10, 10, 10));
+
+        this.listaOpciones.getChildren().add(button);
+        //cargar el fxml
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/playlist/list.fxml"));
+        //anaydiar al enrutador para poder navegar
+        this.router.add("playlists", loader);
+        try {
+            loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        PlayListsController cc = loader.getController();
+        cc.setRouter(this.router);
+        cc.setViewModels(this.playListsViewModel, this.appViewModel, this.musicPlayerViewModel);
+        button.setOnMouseClicked(mouseEvent -> {
+            this.router.push("playlists");
         });
     }
 
@@ -191,7 +250,7 @@ public class PrincipalController {
         button.setMaxWidth(Double.MAX_VALUE);
         button.setAlignment(Pos.CENTER_LEFT);
         VBox.setMargin(button, new Insets(10, 10, 10, 10));
-        this.listaOpciones.getChildren().add(3,button);
+        this.listaOpciones.getChildren().add(3, button);
         //cargar el fxml
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/users/list.fxml"));
         //anaydiar al enrutador para poder navegar
@@ -201,7 +260,7 @@ public class PrincipalController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        UsersController cc= loader.getController();
+        UsersController cc = loader.getController();
         cc.setRouter(this.router);
         cc.setViewModel(this.usersViewModel);
         button.setOnMouseClicked(mouseEvent -> {
@@ -210,7 +269,8 @@ public class PrincipalController {
 
 
     }
-    private void initExit(){
+
+    private void initExit() {
         JFXButton button = new JFXButton("Exit");
         FontIcon icon = new FontIcon("fa-window-close"); // Usando Ikonli: https://kordamp.org/ikonli/
         icon.setIconSize(18);
@@ -221,19 +281,34 @@ public class PrincipalController {
         this.listaOpciones.getChildren().add(button);
         button.setOnMouseClicked(mouseEvent -> {
             //se cierran
-           if(this.musicPlayerViewModel!=null){
-               this.musicPlayerViewModel.dispose();
-           }
-           if(this.songsRepository!=null){
-               this.songsRepository.close();
-           }
-           if(this.userRepository!=null){
-               this.userRepository.close();
-           }
+            if (this.musicPlayerViewModel != null) {
+                this.musicPlayerViewModel.dispose();
+            }
+            if (this.songsRepository != null) {
+                this.songsRepository.close();
+            }
 
-            javafx.application.Platform.exit();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
+            Parent root = null;
+            try {
+                root = loader.load();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            LoginController lc = loader.getController();
+            lc.setAppViewModel(appViewModel);
+
+            Stage stage = new Stage();
+            stage.setTitle("SpotyDAM");
+            // stage.setMaximized(true);
+            stage.setScene(new Scene(root));
+            stage.show();
+
+            // Cerrar ventana de login
+            ((Stage) this.contentPane.getScene().getWindow()).close();
         });
     }
+
     private void initUserForm() {
 
         //cargar el fxml
@@ -245,11 +320,25 @@ public class PrincipalController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        UserController cc= loader.getController();
+        UserController cc = loader.getController();
         cc.setRouter(this.router);
         cc.setViewModel(this.usersViewModel);
     }
+    private void initPlayListForm() {
 
+        //cargar el fxml
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/playlist/form.fxml"));
+        //anaydiar al enrutador para poder navegar
+        this.router.add("playlist", loader);
+        try {
+            loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        PlayListController cc = loader.getController();
+        cc.setRouter(this.router);
+        cc.setViewModels(playListsViewModel,appViewModel,musicPlayerViewModel);
+    }
     private void initSongForm() {
 
         //cargar el fxml
@@ -261,20 +350,12 @@ public class PrincipalController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        SongController cc= loader.getController();
+        SongController cc = loader.getController();
         cc.setRouter(this.router);
-        cc.setViewModels(this.songsViewModel,this.appViewModel,this.musicPlayerViewModel);
+        cc.setViewModels(this.songsViewModel, this.appViewModel, this.musicPlayerViewModel);
     }
-    private void initPlayList() {
-        JFXButton homeButton = new JFXButton("PlayList");
-        FontIcon icon = new FontIcon("fa-list"); // Usando Ikonli: https://kordamp.org/ikonli/
-        icon.setIconSize(18);
-        homeButton.setGraphic(icon);
-        homeButton.setMaxWidth(Double.MAX_VALUE);
-        homeButton.setAlignment(Pos.CENTER_LEFT);
-        VBox.setMargin(homeButton, new Insets(10, 10, 10, 10));
-        this.listaOpciones.getChildren().add(homeButton);
-    }
+
+
     private void initConfig() {
         JFXButton button = new JFXButton("Settings");
         FontIcon icon = new FontIcon("fa-cogs"); // Usando Ikonli: https://kordamp.org/ikonli/
@@ -289,20 +370,21 @@ public class PrincipalController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/config/form.fxml"));
         //anaydiar al enrutador para poder navegar
         this.router.add("config", loader);
-       try {
+        try {
             loader.load();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        var cc= (AWindows)loader.getController();
+        var cc = (AWindows) loader.getController();
         cc.setRouter(this.router);
 
         button.setOnMouseClicked(mouseEvent -> {
             this.router.push("config");
         });
     }
-    private void configRouter(){
-        this.router= new Router();
+
+    private void configRouter() {
+        this.router = new Router();
         this.router.setMain(this.contentPane);
     }
 
@@ -310,8 +392,9 @@ public class PrincipalController {
     public AppViewModel getAppViewModel() {
         return appViewModel;
     }
-    public void setAppViewModel(AppViewModel appViewModel){
-        this.appViewModel=appViewModel;
+
+    public void setAppViewModel(AppViewModel appViewModel) {
+        this.appViewModel = appViewModel;
         this.initRepositories();
         this.initUseCases();
         this.initViewModels();
@@ -319,13 +402,15 @@ public class PrincipalController {
         this.initSongsList();
         this.initSongForm();
 
-        this.initPlayList();
-        this.initConfig();
+        this.initPlayListsList();
+        this.initPlayListForm();
+
         this.initExit();
-        //solo si es administrador se le permitegestionar los usuarios
-        if(this.appViewModel!=null && this.appViewModel.isRoot()) {
+        //solo si es root se le permitegestionar los usuarios
+        if (this.appViewModel != null && this.appViewModel.isRoot()) {
             this.initUsersList();
             this.initUserForm();
+            this.initConfig();
         }
     }
 }
