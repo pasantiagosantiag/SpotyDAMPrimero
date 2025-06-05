@@ -75,14 +75,14 @@ public class PrincipalController {
     private AddSongUseCase addSongUseCase;
     private DeleteSongUseCase deleteSongUseCase;
     private GetSongByIdUseCase getSongByIdUseCase;
-    private ListAllSongsUseCase listAllSongsUseCase;
+    private ListAllSongsByUserAndPublicUseCase listAllSongsByUserAndPublicUseCase;
     private RemoveSongToPlayListUseCase removeSongToPlayListUseCase;
     private UpdateSongUseCase updateSongUseCase;
     //casos de uso de playlist
     private AddPlayListUseCase addPlayListUseCase;
     private DeletePlayListUseCase deletePlayListUseCase;
     private AddSongToPlayListUseCase addSongToPlayListUseCase;
-    private ListAllPlayListUseCase listAllPlayListUseCase;
+    private ListAllPlayListByUserUseCase listAllPlayListByUserUseCase;
     private UpdatePlayListUseCase updatePlayListUseCase;
     //viewmodel
     private UsersViewModel usersViewModel;
@@ -142,12 +142,12 @@ public class PrincipalController {
         this.addSongUseCase = new AddSongUseCase(this.songsRepository, this.filesRepository, this.songsFilesRepository);
         this.deleteSongUseCase = new DeleteSongUseCase(songsRepository, null, this.filesRepository, this.songsFilesRepository);
         this.getSongByIdUseCase = new GetSongByIdUseCase(songsRepository, null);
-        this.listAllSongsUseCase = new ListAllSongsUseCase(songsRepository);
+        this.listAllSongsByUserAndPublicUseCase = new ListAllSongsByUserAndPublicUseCase(songsRepository);
         this.updateSongUseCase = new UpdateSongUseCase(this.songsRepository, null, this.filesRepository, this.songsFilesRepository);
         //playlist
         this.addPlayListUseCase = new AddPlayListUseCase(playListRepository, this.filesRepository);
         this.addSongToPlayListUseCase = new AddSongToPlayListUseCase(playListRepository);
-        this.listAllPlayListUseCase = new ListAllPlayListUseCase(playListRepository);
+        this.listAllPlayListByUserUseCase = new ListAllPlayListByUserUseCase(playListRepository);
         this.deletePlayListUseCase = new DeletePlayListUseCase(playListRepository, this.filesRepository);
         this.updatePlayListUseCase = new UpdatePlayListUseCase(playListRepository, this.filesRepository);
 
@@ -164,8 +164,8 @@ public class PrincipalController {
                 this.updateSongUseCase,
                 this.deleteSongUseCase,
                 this.getSongByIdUseCase,
-                this.listAllSongsUseCase);
-        this.playListsViewModel = new PlayListsViewModel(addPlayListUseCase, updatePlayListUseCase, deletePlayListUseCase, addSongToPlayListUseCase, listAllPlayListUseCase);
+                this.listAllSongsByUserAndPublicUseCase, this.appViewModel);
+        this.playListsViewModel = new PlayListsViewModel(addPlayListUseCase, updatePlayListUseCase, deletePlayListUseCase, addSongToPlayListUseCase, listAllPlayListByUserUseCase, appViewModel);
         this.musicPlayerViewModel = new MusicPlayerViewModel();
     }
 
@@ -365,7 +365,7 @@ public class PrincipalController {
         button.setAlignment(Pos.CENTER_LEFT);
         VBox.setMargin(button, new Insets(10, 10, 10, 10));
 
-        this.listaOpciones.getChildren().add(button);
+        this.listaOpciones.getChildren().add(this.listaOpciones.getChildren().size()-1,button);
         //cargar el fxml
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/config/form.fxml"));
         //anaydiar al enrutador para poder navegar

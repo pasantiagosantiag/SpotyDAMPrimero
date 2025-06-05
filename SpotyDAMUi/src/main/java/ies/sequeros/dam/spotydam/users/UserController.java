@@ -72,9 +72,12 @@ public class UserController extends AWindows {
             this.pathImagenField.setText("");
             //dar valores
             if (this.usersViewModel.currentProperty().get().getId() == null) {
-                this.titulo.setText("Alta");
+                this.titulo.setText("Add user");
             } else {
-                this.titulo.setText("Modificar");
+                if(this.usersViewModel.editModeProperty().get())
+                    this.titulo.setText("Update User");
+                else
+                    this.titulo.setText("");
             }
             this.nombreField.setText(newValue.getName());
 

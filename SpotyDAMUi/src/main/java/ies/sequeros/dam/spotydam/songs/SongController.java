@@ -147,7 +147,7 @@ public class SongController extends AWindows {
         });
 
         // Desactivar botón hasta que sea válido
-        //  guardarBtn.disableProperty().bind(validationSupport.invalidProperty());
+        guardarBtn.disableProperty().bind(validationSupport.invalidProperty());
         guardarBtn.setOnAction(e -> {
             this.save();
 

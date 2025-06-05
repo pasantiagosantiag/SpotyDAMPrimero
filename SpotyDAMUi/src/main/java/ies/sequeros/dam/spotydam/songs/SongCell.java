@@ -213,18 +213,12 @@ this.createPopup();
             if (Files.exists(Path.of(item.getPathImage())))
                 this.imageView.setImage(new Image(Path.of(item.getPathImage()).toUri().toString(), 1120, 120, true, true));
             setGraphic(this.vbox); // Mostrar la imagen en la celda
-            combobox.setItems(new FilteredList<PlayList>(
-                    //falta mirar que es el propietario
-                    this.playListsModel.getPlayListsProperty(), playlist->{
-                if(!playlist.getSongIds().contains(getItem().getId()))
-                    return true;
-                else
-                    return false;
-            }));
+            combobox.setItems(this.playListsModel.getPlayListwithNoSongAndIsProperty(getItem(),null));
+
         }
     }
     protected void createPopup(){
-        JFXButton button = new JFXButton("Formulario");
+        JFXButton button = new JFXButton("Add song to playlist");
 
         VBox form = new VBox(10);
         form.setPadding(new Insets(10));
@@ -254,14 +248,6 @@ this.createPopup();
                 }
             }
         });
-        combobox.setItems(new FilteredList<PlayList>(
-                //falta mirar que es el propietario
-                this.playListsModel.getPlayListsProperty(), playlist->{
-                    if(!playlist.getSongIds().contains(getItem().getId()))
-                        return true;
-                    else
-                        return false;
-        }));
 
 
         JFXButton submitButton = new JFXButton("Add");
@@ -276,8 +262,11 @@ this.createPopup();
 
             popup.hide();
         });
+        HBox hbox= new HBox();
+        hbox.setAlignment(Pos.CENTER);
+        hbox.getChildren().addAll(submitButton, cancelButton);
 submitButton.disableProperty().bind(combobox.getSelectionModel().selectedItemProperty().isNull());
-        form.getChildren().addAll(new Label("Formulario"), combobox, submitButton,cancelButton);
+        form.getChildren().addAll(new Label("Add song to playlist"), combobox, hbox);
 
         popup = new JFXPopup();
         popup.setPopupContent(form);

@@ -3,9 +3,11 @@ package ies.sequeros.dam.spotydam.login;
 import ies.sequeros.dam.spotydam.domain.model.User;
 import ies.sequeros.dam.spotydam.principal.PrincipalController;
 import ies.sequeros.dam.spotydam.utils.AppViewModel;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -51,5 +53,9 @@ public class LoginController {
 
     public void setAppViewModel(AppViewModel appViewModel) {
         this.appViewModel = appViewModel;
+    }
+
+    public void handleExit(MouseEvent mouseEvent) {
+        Platform.exit();
     }
 }

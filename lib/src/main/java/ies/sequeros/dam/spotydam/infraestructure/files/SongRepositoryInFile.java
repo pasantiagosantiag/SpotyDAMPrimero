@@ -90,6 +90,16 @@ public class SongRepositoryInFile implements ISongRepository {
         }).toList();
         return filteritems;
     }
+
+    @Override
+    public List<Song> findByOwenerIdOrIsPublic(UUID userId) {
+        var items=this.load().values();
+        var filteritems=items.stream().filter(s -> {
+            return s.getOwnerId().equals(userId) || s.isPublic();
+        }).toList();
+        return filteritems;
+    }
+
     public List<Song> findByPublicByGenre(Song.Genre genere){
         var items=this.load().values();
         return items.stream().filter(s -> {

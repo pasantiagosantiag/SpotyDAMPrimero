@@ -4,9 +4,12 @@ package ies.sequeros.dam.spotydam.playlist;
 import ies.sequeros.dam.spotydam.application.playlist.*;
 import ies.sequeros.dam.spotydam.domain.model.PlayList;
 import ies.sequeros.dam.spotydam.domain.model.Song;
+import ies.sequeros.dam.spotydam.domain.model.User;
+import ies.sequeros.dam.spotydam.utils.AppViewModel;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -21,16 +24,16 @@ public class PlayListsViewModel {
     //casos de uso
     private final AddPlayListUseCase addPlayListUseCase;
     private final DeletePlayListUseCase deletePlayListUseCase;
-    private final ListAllPlayListUseCase listAllPlayListUseCase;
+    private final ListAllPlayListByUserUseCase listAllPlayListByUserUseCase;
     private AddSongToPlayListUseCase addSongToPlayListUseCase;
     private final UpdatePlayListUseCase updatePlayListUseCase;
-
+    private AppViewModel appViewModel;
 
     public PlayListsViewModel(AddPlayListUseCase addPlayListUseCase, UpdatePlayListUseCase updatePlayListUseCase,
                               DeletePlayListUseCase deletePlayListUseCase, AddSongToPlayListUseCase addSongToPlayListUseCase
-            , ListAllPlayListUseCase listAllPlayListUseCase) {
+            , ListAllPlayListByUserUseCase listAllPlayListByUserUseCase,AppViewModel appViewModel) {
 
-
+this.appViewModel=appViewModel;
         this.items = new SimpleListProperty<>(FXCollections.observableArrayList());
         this.editMode = new SimpleBooleanProperty(false);
         this.current = new SimpleObjectProperty<>(new PlayList());
@@ -38,7 +41,7 @@ public class PlayListsViewModel {
 
         this.deletePlayListUseCase = deletePlayListUseCase;
         this.addSongToPlayListUseCase = addSongToPlayListUseCase;
-        this.listAllPlayListUseCase = listAllPlayListUseCase;
+        this.listAllPlayListByUserUseCase = listAllPlayListByUserUseCase;
         this.updatePlayListUseCase = updatePlayListUseCase;
 
         this.load();
@@ -47,9 +50,9 @@ public class PlayListsViewModel {
     }
 
     public void load() {
-        if (this.listAllPlayListUseCase != null) {
+        if (this.listAllPlayListByUserUseCase != null) {
             this.items.clear();
-            this.items.addAll(this.listAllPlayListUseCase.execute());
+            this.items.addAll(this.listAllPlayListByUserUseCase.execute(appViewModel.getUser().get()));
         } else
             throw new NullPointerException("No se ha definido el caso de uso");
     }
@@ -159,6 +162,12 @@ public class PlayListsViewModel {
         ObservableList<PlayList> oldList = FXCollections.observableArrayList(this.items);
         this.items.clear();
         this.items.addAll(oldList);
+    }
+    public FilteredList<PlayList> getPlayListwithNoSongAndIsProperty(Song s, User u) {
+        return new FilteredList<>(this.items, playList -> {
+            //falta el usuario
+            return !playList.getSongIds().contains(s.getId());
+        });
     }
 
 }

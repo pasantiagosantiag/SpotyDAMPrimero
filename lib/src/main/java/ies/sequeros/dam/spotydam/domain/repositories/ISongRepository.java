@@ -15,6 +15,7 @@ public interface ISongRepository {
     public Song findById(UUID id);
     public List<Song> findByPublic();
     public List<Song> findByOwnerId(UUID userId);
+    public List<Song> findByOwenerIdOrIsPublic(UUID userId);
     public List<Song> findByPublicByGenre(Song.Genre genere);
     public void close();
     public void removeAll();

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ies.sequeros.dam.spotydam.domain.model.PlayList;
+import ies.sequeros.dam.spotydam.domain.model.User;
 import ies.sequeros.dam.spotydam.domain.repositories.IPlayListRepository;
 
 import java.io.File;
@@ -90,12 +91,26 @@ public class PlayListRepositoryInFile implements IPlayListRepository {
     }
 
     @Override
-    public List<PlayList> findByUserId(UUID userId) {
+    public List<PlayList> findByUser(User user) {
         var items=this.load().values();
         var filteritems=items.stream().filter(pl -> {
-            return pl.getOwnerId().equals(userId);
+            return pl.getOwnerId().equals(user.getId());
         }).toList();
         return filteritems;
+    }
+
+   /* @Override
+    public List<PlayList> findByUserIdorAdmin(User user) {
+        var items=this.load().values();
+        var filteritems=items.stream().filter(pl -> {
+            return pl.getOwnerId().equals(user.getId() )|| user.getRole().equals(User.Role.ADMIN);
+        }).toList();
+        return filteritems;
+    }*/
+
+    @Override
+    public List<PlayList> findByTitle(String title) {
+        return List.of();
     }
 
     @Override

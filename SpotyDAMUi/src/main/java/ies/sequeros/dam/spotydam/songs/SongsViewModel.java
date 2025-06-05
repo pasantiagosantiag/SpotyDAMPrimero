@@ -3,6 +3,7 @@ package ies.sequeros.dam.spotydam.songs;
 
 import ies.sequeros.dam.spotydam.application.song.*;
 import ies.sequeros.dam.spotydam.domain.model.Song;
+import ies.sequeros.dam.spotydam.utils.AppViewModel;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,14 +22,15 @@ public class SongsViewModel {
     private AddSongUseCase addSongUseCase;
     private DeleteSongUseCase deleteSongUseCase;
     private GetSongByIdUseCase getSongByIdUseCase;
-    private ListAllSongsUseCase listAllSongUseCase;
+    private ListAllSongsByUserAndPublicUseCase listAllSongUseCase;
+    private AppViewModel appViewModel;
 
     private UpdateSongUseCase updateSongUseCase;
 
 
     public SongsViewModel(AddSongUseCase addSongUseCase, UpdateSongUseCase updateSongUseCase,
                           DeleteSongUseCase deleteSongUseCase, GetSongByIdUseCase getSongByIdUseCase
-            , ListAllSongsUseCase listAllSongUseCase) {
+            , ListAllSongsByUserAndPublicUseCase listAllSongUseCase, AppViewModel appViewModel) {
 
 
         this.items = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -40,7 +42,7 @@ public class SongsViewModel {
         this.getSongByIdUseCase = getSongByIdUseCase;
         this.listAllSongUseCase = listAllSongUseCase;
         this.updateSongUseCase = updateSongUseCase;
-
+this.appViewModel=appViewModel;
         this.load();
 
 
@@ -49,7 +51,7 @@ public class SongsViewModel {
     public void load() {
         if (this.listAllSongUseCase != null) {
             this.items.clear();
-            this.items.addAll(this.listAllSongUseCase.execute());
+            this.items.addAll(this.listAllSongUseCase.execute(this.appViewModel.getUser().get()));
         } else
             throw new NullPointerException("No se ha definido el caso de uso");
     }
