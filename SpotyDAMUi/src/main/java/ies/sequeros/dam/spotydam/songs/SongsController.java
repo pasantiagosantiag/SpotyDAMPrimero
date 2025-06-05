@@ -121,6 +121,9 @@ public class SongsController extends AWindows {
                 else
                     this.playerViewModel.pause();
             });
+            c.setOnAddSongToPlayList((song, playList) -> {
+                this.playListsViewModel.addSongToPlayList(playList,song);
+            });
             return c;
         });
 

@@ -1,10 +1,7 @@
 package ies.sequeros.dam.spotydam.songs;
 
 
-
-
 import ies.sequeros.dam.spotydam.application.song.*;
-import ies.sequeros.dam.spotydam.application.user.GetUserByIdUseCase;
 import ies.sequeros.dam.spotydam.domain.model.Song;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -27,16 +24,15 @@ public class SongsViewModel {
     private ListAllSongsUseCase listAllSongUseCase;
 
     private UpdateSongUseCase updateSongUseCase;
-    
 
 
     public SongsViewModel(AddSongUseCase addSongUseCase, UpdateSongUseCase updateSongUseCase,
                           DeleteSongUseCase deleteSongUseCase, GetSongByIdUseCase getSongByIdUseCase
-    , ListAllSongsUseCase listAllSongUseCase) {
-       
+            , ListAllSongsUseCase listAllSongUseCase) {
+
 
         this.items = new SimpleListProperty<>(FXCollections.observableArrayList());
-this.editMode= new SimpleBooleanProperty(false);
+        this.editMode = new SimpleBooleanProperty(false);
         this.current = new SimpleObjectProperty<>(new Song());
         this.addSongUseCase = addSongUseCase;
         this.getSongByIdUseCase = getSongByIdUseCase;
@@ -49,6 +45,7 @@ this.editMode= new SimpleBooleanProperty(false);
 
 
     }
+
     public void load() {
         if (this.listAllSongUseCase != null) {
             this.items.clear();
@@ -117,11 +114,12 @@ this.editMode= new SimpleBooleanProperty(false);
 
     /**
      * si el id es 0 significa que es nuevo
+     *
      * @throws NoSuchFieldException
      * @throws IOException
      */
     public void saveCurrent() throws NoSuchFieldException, IOException {
-        if (this.current.get() != null && this.current.get().getId()==null) {
+        if (this.current.get() != null && this.current.get().getId() == null) {
             this.current.get().setId(UUID.randomUUID());
             //se actualiza en el reposotio, pero no en le viewmodel por tema de hilos
             this.addSong(this.current.get());
@@ -137,6 +135,7 @@ this.editMode= new SimpleBooleanProperty(false);
             }
         }
     }
+
     public void setEmptyCurrent() {
         this.current.set(new Song());
     }

@@ -58,10 +58,14 @@ public class PlayListsViewModel {
         this.items.clear();
         this.load();
     }
+    public void addSongToPlayList(PlayList playList,Song song) {
+        this.addSongToPlayListUseCase.execute(playList,song);
+    }
     public void addSongToCurrentPlayList(Song song) throws IOException, NoSuchFieldException {
         if(song!=null ) {
             this.addSongToPlayListUseCase.execute(this.current.get(),song);
-
+            //se refresca la lista
+            this.refesh();
         }
         else{
             throw new NullPointerException("Song and/or playlist  are null");

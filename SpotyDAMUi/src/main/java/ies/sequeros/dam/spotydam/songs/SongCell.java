@@ -10,6 +10,7 @@ import ies.sequeros.dam.spotydam.playlist.PlayListsViewModel;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.beans.property.ListProperty;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -43,10 +44,10 @@ public class SongCell extends GridCell<Song> {
     private BiConsumer<Song,PlayList> onAddSongToPlayList;
     private PopOver popAddList;
     private JFXPopup popup;
-    Label descLabel;
-
-    FontIcon deleteIcon, viewIcon, editIcon,addToListIcon;
-    FontIcon playIcon;
+    private Label descLabel;
+    private ComboBox<PlayList> combobox;
+    private FontIcon deleteIcon, viewIcon, editIcon,addToListIcon;
+    private FontIcon playIcon;
     private MFXButton playBtn,editBtn,viewBtn,deleteBtn, addToListBtn;
     private ListProperty<PlayList> playLists;
     private SongsViewModel viewModel;
@@ -172,6 +173,14 @@ this.createPopup();
 
     }
 
+    public BiConsumer<Song, PlayList> getOnAddSongToPlayList() {
+        return onAddSongToPlayList;
+    }
+
+    public void setOnAddSongToPlayList(BiConsumer<Song, PlayList> onAddSongToPlayList) {
+        this.onAddSongToPlayList = onAddSongToPlayList;
+    }
+
     public void setOnDelete(Consumer<Song> onDelete) {
         this.ondelete = onDelete;
     }
@@ -204,6 +213,14 @@ this.createPopup();
             if (Files.exists(Path.of(item.getPathImage())))
                 this.imageView.setImage(new Image(Path.of(item.getPathImage()).toUri().toString(), 1120, 120, true, true));
             setGraphic(this.vbox); // Mostrar la imagen en la celda
+            combobox.setItems(new FilteredList<PlayList>(
+                    //falta mirar que es el propietario
+                    this.playListsModel.getPlayListsProperty(), playlist->{
+                if(!playlist.getSongIds().contains(getItem().getId()))
+                    return true;
+                else
+                    return false;
+            }));
         }
     }
     protected void createPopup(){
@@ -213,7 +230,7 @@ this.createPopup();
         form.setPadding(new Insets(10));
 
 
-        ComboBox<PlayList> combobox=new ComboBox<>();
+        combobox=new ComboBox<>();
         //factorias para el combobox
         combobox.setCellFactory( lv -> new ListCell<>() {
             @Override
@@ -237,12 +254,21 @@ this.createPopup();
                 }
             }
         });
-        combobox.setItems(this.playListsModel.getPlayListsProperty());
+        combobox.setItems(new FilteredList<PlayList>(
+                //falta mirar que es el propietario
+                this.playListsModel.getPlayListsProperty(), playlist->{
+                    if(!playlist.getSongIds().contains(getItem().getId()))
+                        return true;
+                    else
+                        return false;
+        }));
 
 
         JFXButton submitButton = new JFXButton("Add");
         submitButton.setOnAction(e -> {
-            this.onAddSongToPlayList.accept(getItem(), combobox.getValue());
+            if(this.onAddSongToPlayList!=null) {
+                this.onAddSongToPlayList.accept(getItem(), combobox.getValue());
+            }
             popup.hide();
         });
         JFXButton cancelButton = new JFXButton("Cancel");

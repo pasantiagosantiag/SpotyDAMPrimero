@@ -15,6 +15,6 @@ public class AddSongToPlayListUseCase {
             throw new NullPointerException("PlayList or song is null");
         }
         playList.addSong(song.getId());
-        repository.add(playList);
+        repository.update(playList);
     }
 }
