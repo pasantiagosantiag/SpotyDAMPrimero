@@ -9,8 +9,10 @@ import ies.sequeros.dam.spotydam.utils.AppViewModel;
 import ies.sequeros.dam.spotydam.utils.MusicPlayerViewModel;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,6 +23,8 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import org.controlsfx.control.GridCell;
+import org.controlsfx.control.GridView;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -30,11 +34,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.UUID;
 
 
 public class PlayListController extends AWindows {
-    public Button playBtn;
-    public HBox masonary;
+
+    public GridView<UUID> listacanciones;
     @FXML
     private ImageView imageView;
     @FXML
@@ -93,6 +98,7 @@ public class PlayListController extends AWindows {
                 this.imageView.setImage(new Image(getClass().getResourceAsStream("/images/No_Image_Available.jpg"), 180, 120, true, true));
             }
             this.pathImagenField.setText(newValue.getImage());
+            this.listacanciones.setItems(FXCollections.observableArrayList(newValue.getSongIds()));
 
         };
         this.playListsViewModel.currentProperty().addListener(this.escuchadorViewModel);
@@ -139,9 +145,22 @@ public class PlayListController extends AWindows {
             this.router.pop();
         });
 
-       // this.masonary.setsetGutter(15);
+      this.listacanciones.setCellFactory(gridView -> new GridCell<UUID>() {
+          private final VBox content = new VBox();
 
-
+          @Override
+          protected void updateItem(UUID item, boolean empty) {
+              super.updateItem(item, empty);
+              if (empty || item == null) {
+                  setGraphic(null);
+              } else {
+                  content.getChildren().clear();
+                  Label nombre = new Label(item.toString());
+                  content.getChildren().add(nombre);
+                  setGraphic(content);
+              }
+          }
+      });
 
 
 
