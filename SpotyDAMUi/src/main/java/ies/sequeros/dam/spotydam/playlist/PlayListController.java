@@ -1,6 +1,7 @@
 package ies.sequeros.dam.spotydam.playlist;
 
 
+import ies.sequeros.dam.spotydam.application.playlist.model.PlayListWithSongs;
 import ies.sequeros.dam.spotydam.domain.model.PlayList;
 import ies.sequeros.dam.spotydam.domain.model.Song;
 import ies.sequeros.dam.spotydam.navegacion.AWindows;
@@ -8,6 +9,8 @@ import ies.sequeros.dam.spotydam.songs.SongsViewModel;
 import ies.sequeros.dam.spotydam.utils.AppViewModel;
 import ies.sequeros.dam.spotydam.utils.MusicPlayerViewModel;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -38,8 +41,10 @@ import java.util.UUID;
 
 
 public class PlayListController extends AWindows {
+    @FXML
+    private
+     HBox galleria;
 
-    public GridView<UUID> listacanciones;
     @FXML
     private ImageView imageView;
     @FXML
@@ -63,23 +68,28 @@ public class PlayListController extends AWindows {
     private PlayListsViewModel playListsViewModel;
     private AppViewModel appViewModel;
     private MusicPlayerViewModel playerViewModel;
-    private ChangeListener<PlayList> escuchadorViewModel;
+    private ChangeListener<PlayListWithSongs> escuchadorViewModel;
+    private ListProperty<Song> songList;
+    private SongsViewModel songsViewModel;
 
     public PlayListController() {
-
+        songList = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
 
-    public void setViewModels(PlayListsViewModel playListsViewModel, AppViewModel appViewModel, MusicPlayerViewModel musicPlayerViewModel) {
+    public void setViewModels(PlayListsViewModel playListsViewModel, 
+                              SongsViewModel songsViewModel,
+                              AppViewModel appViewModel,
+                              MusicPlayerViewModel musicPlayerViewModel) {
         this.playListsViewModel = playListsViewModel;
         this.appViewModel = appViewModel;
         this.playerViewModel = musicPlayerViewModel;
+        this.songsViewModel= songsViewModel;
         this.setEditionMode();
         this.configValidation();
         this.escuchadorViewModel = (observableValue, item, newValue) -> {
 
             //reset para campos especiales
             this.pathImagenField.setText("");
-
             //dar valores
             if (this.playListsViewModel.currentProperty().get().getId() == null) {
                 this.titulo.setText("New PlayList");
@@ -98,7 +108,35 @@ public class PlayListController extends AWindows {
                 this.imageView.setImage(new Image(getClass().getResourceAsStream("/images/No_Image_Available.jpg"), 180, 120, true, true));
             }
             this.pathImagenField.setText(newValue.getImage());
-            this.listacanciones.setItems(FXCollections.observableArrayList(newValue.getSongIds()));
+            this.songList.clear();;
+            this.songList.addAll(FXCollections.observableArrayList(newValue.getSongs()));
+            this.galleria.getChildren().clear();
+            for(Song song : songList) {
+                SongCard sc= new SongCard(song);
+                sc.setOnPlay(song1 -> {
+                    this.playerViewModel.stop();
+
+                        if( this.playerViewModel.currentTrackProperty().get()==null || !this.playerViewModel.currentTrackProperty().get().equals(song1.getPath()))
+                            this.playerViewModel.setSong(song.getPath());
+                        var status=this.playerViewModel.getStatus();
+                       // disablePlayButtonfromGrid();
+                        if(this.playerViewModel.getStatus()== MediaPlayer.Status.READY || this.playerViewModel.getStatus()== MediaPlayer.Status.UNKNOWN || this.playerViewModel.getStatus()== MediaPlayer.Status.PAUSED || this.playerViewModel.getStatus()== MediaPlayer.Status.STOPPED)
+                            this.playerViewModel.play();
+                        else
+                            this.playerViewModel.pause();
+                    });
+                   // musicPlayerViewModel.play(song1.getPath());
+                //});
+                sc.setOnView(song1 -> {
+                    this.songsViewModel.setCurrent(song1);
+                    this.router.push("song");
+                });
+                sc.setOnDelete(song1 -> {
+                   // this.playListsViewModel.
+                });
+                this.galleria.getChildren().add(sc);
+                
+            }
 
         };
         this.playListsViewModel.currentProperty().addListener(this.escuchadorViewModel);
@@ -142,25 +180,11 @@ public class PlayListController extends AWindows {
 
         });
         this.cancelarBtn.setOnMouseClicked(event -> {
+
             this.router.pop();
         });
 
-      this.listacanciones.setCellFactory(gridView -> new GridCell<UUID>() {
-          private final VBox content = new VBox();
 
-          @Override
-          protected void updateItem(UUID item, boolean empty) {
-              super.updateItem(item, empty);
-              if (empty || item == null) {
-                  setGraphic(null);
-              } else {
-                  content.getChildren().clear();
-                  Label nombre = new Label(item.toString());
-                  content.getChildren().add(nombre);
-                  setGraphic(content);
-              }
-          }
-      });
 
 
 
@@ -175,7 +199,6 @@ public class PlayListController extends AWindows {
                 Validator.createEmptyValidator("Name is required"));
         validationSupport.registerValidator(description,
                 Validator.createEmptyValidator("Description is required"));
-
         validationSupport.registerValidator(this.pathImagenField,
                 Validator.createEmptyValidator("Image is required"));
 
@@ -192,11 +215,7 @@ public class PlayListController extends AWindows {
             this.playListsViewModel.currentProperty().get().setName(this.nameField.getText());
             this.playListsViewModel.currentProperty().get().setDescription(this.description.getText());
             this.playListsViewModel.currentProperty().get().setImage(this.pathImagenField.getText());
-
             this.playListsViewModel.currentProperty().get().setPublic(this.isPublic.isSelected());
-
-
-
             try {
                 this.playListsViewModel.saveCurrent();
             } catch (Exception ex) {

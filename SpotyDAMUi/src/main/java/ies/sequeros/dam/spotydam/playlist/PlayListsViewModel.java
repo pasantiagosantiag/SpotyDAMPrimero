@@ -2,6 +2,7 @@ package ies.sequeros.dam.spotydam.playlist;
 
 
 import ies.sequeros.dam.spotydam.application.playlist.*;
+import ies.sequeros.dam.spotydam.application.playlist.model.PlayListWithSongs;
 import ies.sequeros.dam.spotydam.domain.model.PlayList;
 import ies.sequeros.dam.spotydam.domain.model.Song;
 import ies.sequeros.dam.spotydam.domain.model.User;
@@ -15,10 +16,11 @@ import java.io.IOException;
 import java.util.UUID;
 
 public class PlayListsViewModel {
+    private final GetPlayListWithtSongsUseCase getPlayListWithSongsUseCase;
     //listado observable
     private ListProperty<PlayList> items;
     //PlayList actual, para los borrados, altas y modificaciones
-    private final SimpleObjectProperty<PlayList> current;
+    private final SimpleObjectProperty<PlayListWithSongs> current;
     //modo edicion o no
     private final BooleanProperty editMode;
     //casos de uso
@@ -31,14 +33,14 @@ public class PlayListsViewModel {
 
     public PlayListsViewModel(AddPlayListUseCase addPlayListUseCase, UpdatePlayListUseCase updatePlayListUseCase,
                               DeletePlayListUseCase deletePlayListUseCase, AddSongToPlayListUseCase addSongToPlayListUseCase
-            , ListAllPlayListByUserUseCase listAllPlayListByUserUseCase,AppViewModel appViewModel) {
+            , ListAllPlayListByUserUseCase listAllPlayListByUserUseCase,AppViewModel appViewModel,GetPlayListWithtSongsUseCase getPlayListWithtSongsUseCase) {
 
 this.appViewModel=appViewModel;
         this.items = new SimpleListProperty<>(FXCollections.observableArrayList());
         this.editMode = new SimpleBooleanProperty(false);
-        this.current = new SimpleObjectProperty<>(new PlayList());
+        this.current = new SimpleObjectProperty<>(new PlayListWithSongs());
         this.addPlayListUseCase = addPlayListUseCase;
-
+        this.getPlayListWithSongsUseCase= getPlayListWithtSongsUseCase;
         this.deletePlayListUseCase = deletePlayListUseCase;
         this.addSongToPlayListUseCase = addSongToPlayListUseCase;
         this.listAllPlayListByUserUseCase = listAllPlayListByUserUseCase;
@@ -64,21 +66,12 @@ this.appViewModel=appViewModel;
     public void addSongToPlayList(PlayList playList,Song song) {
         this.addSongToPlayListUseCase.execute(playList,song);
     }
-    public void addSongToCurrentPlayList(Song song) throws IOException, NoSuchFieldException {
-        if(song!=null ) {
-            this.addSongToPlayListUseCase.execute(this.current.get(),song);
-            //se refresca la lista
-            this.refesh();
-        }
-        else{
-            throw new NullPointerException("Song and/or playlist  are null");
-        }
-    }
-    public void addPlayList(PlayList item) throws NoSuchFieldException, IOException {
+
+    public void addPlayList(PlayListWithSongs item) throws NoSuchFieldException, IOException {
         if (this.addPlayListUseCase != null) {
             this.addPlayListUseCase.execute(item);
-            this.items.add(item);
-            this.current.set(new PlayList());
+            this.items.add(item.toPlayList());
+            this.current.set(new PlayListWithSongs());
             this.current.set(item);
         } else
             throw new NullPointerException("Caso de uso para añadir nulo");
@@ -111,20 +104,21 @@ this.appViewModel=appViewModel;
         return this.items;
     }
 
-    public PlayList getCurrent() {
+    public PlayListWithSongs getCurrent() {
         return this.current.get();
     }
 
-    public ObjectProperty<PlayList> currentProperty() {
+    public ObjectProperty<PlayListWithSongs> currentProperty() {
         return this.current;
     }
 
     public void setCurrent(PlayList item) {
-        this.current.set(item);
+        var playlistwithsong=this.getPlayListWithSongsUseCase.execute(item.getId());
+        this.current.set(playlistwithsong);
     }
 
     public void clearCurrent() {
-        this.current.set(new PlayList());
+        this.current.set(new PlayListWithSongs());
     }
 
     /**
@@ -150,7 +144,7 @@ this.appViewModel=appViewModel;
     }
 
     public void setEmptyCurrent() {
-        this.current.set(new PlayList());
+        this.current.set(new PlayListWithSongs());
     }
 
     /**
@@ -158,7 +152,7 @@ this.appViewModel=appViewModel;
      * se refresca la lista.
      */
     public void refesh() {
-        this.current.set(new PlayList());
+        this.current.set(new PlayListWithSongs());
         ObservableList<PlayList> oldList = FXCollections.observableArrayList(this.items);
         this.items.clear();
         this.items.addAll(oldList);

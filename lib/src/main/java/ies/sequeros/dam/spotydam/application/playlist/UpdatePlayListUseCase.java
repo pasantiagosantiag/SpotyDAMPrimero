@@ -1,5 +1,6 @@
 package ies.sequeros.dam.spotydam.application.playlist;
 
+import ies.sequeros.dam.spotydam.application.playlist.model.PlayListWithSongs;
 import ies.sequeros.dam.spotydam.domain.model.PlayList;
 import ies.sequeros.dam.spotydam.domain.model.Song;
 import ies.sequeros.dam.spotydam.domain.repositories.IFilesRepository;
@@ -21,7 +22,7 @@ public class UpdatePlayListUseCase {
         //gestión de ficheros
         this.imagesRepository = imagesRepository;
     }
-    public void execute(PlayList item) {
+    public void execute(PlayListWithSongs item) {
         PlayList original=playListRepository.findById(item.getId());
         if(original==null) {
             throw  new IllegalArgumentException("Playlist with id "+item.getId()+" not found");
@@ -32,6 +33,6 @@ public class UpdatePlayListUseCase {
             String nuevoPath=this.imagesRepository.replace("SongImg"+item.getId().toString(),item.getImage(),original.getImage());
             item.setImage(nuevoPath);
         }
-        playListRepository.update(item);
+        playListRepository.update(item.toPlayList());
     }
 }

@@ -8,6 +8,7 @@ import ies.sequeros.dam.spotydam.domain.repositories.ISongRepository;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -106,6 +107,20 @@ public class SongRepositoryInFile implements ISongRepository {
             return s.getGenres().stream().anyMatch(genre -> genre.equals(genere));
         }).toList();
     }
+
+    @Override
+    public List<Song> findByListOfIds(List<UUID> ids) {
+        var items=this.load().values();
+        var list=new ArrayList<Song>();
+        for(Song item:items){
+            if(ids.contains(item.getId())){
+                list.add(item);
+            }
+        }
+
+        return list;
+    }
+
     public List<Song> findByPublic(){
         var items=this.load().values();
         return items.stream().filter(Song::isPublic).toList();

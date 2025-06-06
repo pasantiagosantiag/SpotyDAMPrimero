@@ -1,5 +1,6 @@
 package ies.sequeros.dam.spotydam.application.playlist;
 
+import ies.sequeros.dam.spotydam.application.playlist.model.PlayListWithSongs;
 import ies.sequeros.dam.spotydam.domain.model.PlayList;
 import ies.sequeros.dam.spotydam.domain.model.Song;
 import ies.sequeros.dam.spotydam.domain.repositories.IFilesRepository;
@@ -16,11 +17,11 @@ public class AddPlayListUseCase {
         this.imagesRepository = imagesRepository;
 
     }
-    public void execute(PlayList item) {
+    public void execute(PlayListWithSongs item) {
         //se almacena la cancion y la imagen
 
         String nuevoPathImagen=imagesRepository.save(item.getId().toString(),item.getImage());
         item.setImage(nuevoPathImagen);
-        repository.add(item);
+        repository.add(item.toPlayList());
     }
 }

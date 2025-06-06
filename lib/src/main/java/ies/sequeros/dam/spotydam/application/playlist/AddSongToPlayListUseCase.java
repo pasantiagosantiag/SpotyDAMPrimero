@@ -1,5 +1,6 @@
 package ies.sequeros.dam.spotydam.application.playlist;
 
+import ies.sequeros.dam.spotydam.application.playlist.model.PlayListWithSongs;
 import ies.sequeros.dam.spotydam.domain.model.PlayList;
 import ies.sequeros.dam.spotydam.domain.model.Song;
 import ies.sequeros.dam.spotydam.domain.repositories.IPlayListRepository;

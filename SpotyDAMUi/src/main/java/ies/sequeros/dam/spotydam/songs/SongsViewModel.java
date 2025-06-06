@@ -107,7 +107,12 @@ this.appViewModel=appViewModel;
     }
 
     public void setCurrent(Song item) {
-        this.current.set(item);
+        if(item.getId()!=null){
+            this.items.stream().filter(s -> s.getId().equals(item.getId())).findFirst().ifPresent(s -> {
+                this.current.set(s);
+            });
+        }else
+            this.current.set(item);
     }
 
     public void clearCurrent() {

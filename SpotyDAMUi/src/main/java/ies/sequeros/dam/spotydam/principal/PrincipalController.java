@@ -84,6 +84,7 @@ public class PrincipalController {
     private AddSongToPlayListUseCase addSongToPlayListUseCase;
     private ListAllPlayListByUserUseCase listAllPlayListByUserUseCase;
     private UpdatePlayListUseCase updatePlayListUseCase;
+    private GetPlayListWithtSongsUseCase getPlayListWithtSongsUseCase;
     //viewmodel
     private UsersViewModel usersViewModel;
     private SongsViewModel songsViewModel;
@@ -150,6 +151,7 @@ public class PrincipalController {
         this.listAllPlayListByUserUseCase = new ListAllPlayListByUserUseCase(playListRepository);
         this.deletePlayListUseCase = new DeletePlayListUseCase(playListRepository, this.filesRepository);
         this.updatePlayListUseCase = new UpdatePlayListUseCase(playListRepository, this.filesRepository);
+        this.getPlayListWithtSongsUseCase= new GetPlayListWithtSongsUseCase(playListRepository,this.songsRepository);
 
     }
 
@@ -165,7 +167,7 @@ public class PrincipalController {
                 this.deleteSongUseCase,
                 this.getSongByIdUseCase,
                 this.listAllSongsByUserAndPublicUseCase, this.appViewModel);
-        this.playListsViewModel = new PlayListsViewModel(addPlayListUseCase, updatePlayListUseCase, deletePlayListUseCase, addSongToPlayListUseCase, listAllPlayListByUserUseCase, appViewModel);
+        this.playListsViewModel = new PlayListsViewModel(addPlayListUseCase, updatePlayListUseCase, deletePlayListUseCase, addSongToPlayListUseCase, listAllPlayListByUserUseCase, appViewModel, getPlayListWithtSongsUseCase);
         this.musicPlayerViewModel = new MusicPlayerViewModel();
     }
 
@@ -337,7 +339,7 @@ public class PrincipalController {
         }
         PlayListController cc = loader.getController();
         cc.setRouter(this.router);
-        cc.setViewModels(playListsViewModel,appViewModel,musicPlayerViewModel);
+        cc.setViewModels(playListsViewModel,songsViewModel,appViewModel,musicPlayerViewModel);
     }
     private void initSongForm() {
 
